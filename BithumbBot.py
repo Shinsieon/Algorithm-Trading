@@ -12,6 +12,7 @@ import pandas as pd
 from Algorithms import Threshold_Algorithms
 from AuthHeader import XCoinAPI
 from Config import Config
+
 form_class = uic.loadUiType("./CoinBot.ui")[0]
 
 class BithumbBot(QMainWindow, form_class):
@@ -41,21 +42,27 @@ class BithumbBot(QMainWindow, form_class):
     
     #각 알고리즘은 tickers를 받아 매수, 매도 해야하는 코인 정보를 sendSignal 함수에 실어 보낸다.
     def startTrade(self):
-        alg = Threshold_Algorithms(Bithumb.get_tickers()[:5])
+        alg = Threshold_Algorithms('BTC')
 
         while True:
             if Event().is_set() : break #프로그램을 종료하면 무한루프도 같이 종료
             alg.getSignal(self.sendSignal) 
+            myCoins = self.getMyAccount()
+            self.addCoinLog(str(myCoins))
 
-            time.sleep(5)
+            time.sleep(2)
     
     #주문 클래스에 매수/매도 주문을 넣는다
     def sendSignal(self, sig):
-        #sig = (bid|ask, ticker, amount, price)
-        result = Order(sig) #True|False 값을 받는다.
-        if result:
-            print("성공적으로 매수")
-        else : print("매수 실패")
+        #sig = (bid|ask, ticker, unit, price)
+        ord = Order()
+        result = False
+        if sig[0]=='bid' :
+            result = ord.buy_coin(sig[1], sig[2])
+        else : result = ord.sell_coin(sig[1], sig[2])
+
+        if result: self.addTradeLog(str(sig[1]) + " " + str(sig[2]) + "개 " + str(sig[0]) + " 성공")
+        else : self.addTradeLog(str(sig[1]) + " " + str(sig[2]) + "개 " + str(sig[0]) + " 실패")
 
     def addTradeLog(self, txt):
         print(txt)
