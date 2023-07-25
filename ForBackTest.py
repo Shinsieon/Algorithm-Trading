@@ -8,10 +8,12 @@ print("this is for backtest")
 bt = BackTesting(100)
 
 ticker = 'BTC'
+tickers = ['BTC', 'ETH', 'XRP']
 
 BUY_THRESHOLD = 0.05  # percentage change in price to trigger a buy signal
 SELL_THRESHOLD = -0.03  # percentage change in price to trigger a sell signal
 STOP_LOSS_THRESHOLD = -0.1  # percentage change in price to trigger a stop-loss sell
+
 
 def check_buy_signal(ticker, prev_price, curr_price):
     #previous_price = pybithumb.get_ohlcv(ticker)['close'][-2]  # get previous closing price
@@ -33,7 +35,17 @@ def check_sell_signal(ticker, curr_price, buy_price):
         return False
     
 # retrieve historical data
-df = pybithumb.get_ohlcv(ticker, interval='day')
+btc = pd.DataFrame(pybithumb.get_ohlcv('BTC')['close'])
+eth = pd.DataFrame(pybithumb.get_ohlcv('ETH')['close'])
+xrp = pd.DataFrame(pybithumb.get_ohlcv('XRP')['close'])
+btc.rename(columns = {'close' : 'BTC'}, inplace = True)
+eth.rename(columns = {'close' : 'ETH'}, inplace = True)
+xrp.rename(columns = {'close' : 'XRP'}, inplace = True)
+df1 = pd.merge(btc, eth, how='outer', on='time')
+df2 = pd.merge(df1, xrp, how='outer', on='time')
+df2.fillna(0)
+
+#df = pybithumb.get_ohlcv(ticker, interval='day')
 print(df)
 
 # initialize variables
