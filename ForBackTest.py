@@ -18,7 +18,7 @@ STOP_LOSS_THRESHOLD = -0.1  # percentage change in price to trigger a stop-loss 
 def check_buy_signal(ticker, prev_price, curr_price):
     #previous_price = pybithumb.get_ohlcv(ticker)['close'][-2]  # get previous closing price
     price_change = (curr_price - prev_price) / prev_price  # calculate price change percentage
-
+    print("변동률 : ", '{:.2f}'.format(price_change*100))
     if price_change > BUY_THRESHOLD:
         return True
     else:
@@ -26,7 +26,7 @@ def check_buy_signal(ticker, prev_price, curr_price):
 
 def check_sell_signal(ticker, curr_price, buy_price):
     price_change = (curr_price - buy_price) / buy_price  # calculate price change percentage
-
+    print("변동률 : ", '{:.2f}'.format(price_change))
     if price_change < SELL_THRESHOLD:
         return True  # sell if the price has dropped by the sell threshold percentage
     elif price_change < STOP_LOSS_THRESHOLD:
@@ -44,7 +44,7 @@ xrp.rename(columns = {'close' : 'XRP'}, inplace = True)
 df1 = pd.merge(btc, eth, how='outer', on='time')
 df2 = pd.merge(df1, xrp, how='outer', on='time')
 df2.fillna(0)
-
+df = pybithumb.get_ohlcv('BTC', interval='minute5')
 #df = pybithumb.get_ohlcv(ticker, interval='day')
 print(df)
 
