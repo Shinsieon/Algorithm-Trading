@@ -17,6 +17,7 @@ STOP_LOSS_THRESHOLD = -0.1  # percentage change in price to trigger a stop-loss 
 
 def check_buy_signal(ticker, prev_price, curr_price):
     #previous_price = pybithumb.get_ohlcv(ticker)['close'][-2]  # get previous closing price
+    print("heelos")
     price_change = (curr_price - prev_price) / prev_price  # calculate price change percentage
     print("변동률 : ", '{:.2f}'.format(price_change*100))
     if price_change > BUY_THRESHOLD:
